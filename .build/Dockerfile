@@ -283,7 +283,7 @@ WORKDIR $HOME
   ############################################################################
   ################ Dependency: jupyter/datascience-notebook ##################
   ############################################################################
-  
+
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 
@@ -389,25 +389,18 @@ RUN pip install --upgrade pip && \
     pip install --no-cache-dir keras
 
 # Install PyTorch with dependencies
-RUN conda install --quiet --yes \
-    pyyaml mkl mkl-include setuptools cmake cffi typing
-
+  && conda install --quiet --yes pyyaml mkl mkl-include setuptools cmake cffi typing \
 # Check compatibility here: https://pytorch.org/get-started/locally/
-RUN conda install --quiet --yes \
-     pytorch \ 
-     torchvision \
-     cudatoolkit=10.1 -c pytorch
-#    pip install torch_nightly -f https://download.pytorch.org/whl/nightly/cu90/torch_nightly.html && \
-
+  && conda install --quiet --yes pytorch torchvision cudatoolkit=10.1 -c pytorch \
 # Clean installation
-RUN conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+  && conda clean --all -f -y \
+  && fix-permissions $CONDA_DIR \
+  && fix-permissions /home/$NB_USER
 
   ############################################################################
   ############################ Useful packages ###############################
   ############################################################################
-  
+
 LABEL authors="Christoph Schranz <christoph.schranz@salzburgresearch.at>, Mathematical Michael <consistentbayes@gmail.com>"
 
 USER root
@@ -447,8 +440,18 @@ RUN jupyter labextension install @ijmbarr/jupyterlab_spellchecker
 
 RUN fix-permissions /home/$NB_USER
 
-# Switch back to jovyan to avoid accidental container runs as root
-USER $NB_UID
+RUN pip install --upgrade jupyterlab-git==0.10.0 \
+                          folium \
+                          plotly \
+  && export NODE_OPTIONS=--max-old-space-size=4096 \
+  && jupyter labextension install plotlywidget@1.5.4 --no-build \
+  && jupyter labextension install jupyterlab-plotly@1.5.4 --no-build \
+  && jupyter serverextension enable --py jupyterlab_git --sys-prefix \
+  && jupyter lab build \
+  && jupyter labextension list \
+  && unset NODE_OPTIONS \
+  && fix-permissions $CONDA_DIR \
+  && fix-permissions /home/$NB_USER
 
 # Copy jupyter_notebook_config.json
 COPY jupyter_notebook_config.json /etc/jupyter/
