@@ -283,7 +283,7 @@ WORKDIR $HOME
   ############################################################################
   ################ Dependency: jupyter/datascience-notebook ##################
   ############################################################################
-
+  
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 
@@ -386,8 +386,7 @@ LABEL maintainer="Christoph Schranz <christoph.schranz@salzburgresearch.at>"
 # installation via conda leads to errors in version 4.8.2
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir "tensorflow-gpu>=2.1.*" && \
-    pip install --no-cache-dir keras
-
+    pip install --no-cache-dir keras \
 # Install PyTorch with dependencies
   && conda install --quiet --yes pyyaml mkl mkl-include setuptools cmake cffi typing \
 # Check compatibility here: https://pytorch.org/get-started/locally/
@@ -400,46 +399,7 @@ RUN pip install --upgrade pip && \
   ############################################################################
   ############################ Useful packages ###############################
   ############################################################################
-
-LABEL authors="Christoph Schranz <christoph.schranz@salzburgresearch.at>, Mathematical Michael <consistentbayes@gmail.com>"
-
-USER root
-
-# Install elasticsearch libs
-USER root
-RUN apt-get update \
- && curl -sL https://repo1.maven.org/maven2/org/elasticsearch/elasticsearch-hadoop/6.8.1/elasticsearch-hadoop-6.8.1.jar
-RUN pip install --no-cache-dir elasticsearch==7.1.0
-
-RUN pip install --no-cache-dir ipyleaflet plotly==4.8.* "ipywidgets>=7.5"
-
-# Install important packages and Graphviz
-RUN set -ex \
- && buildDeps=' \
-    graphviz==0.11 \
-' \
- && apt-get update \
- && apt-get -y install htop apt-utils graphviz libgraphviz-dev openssh-client \
- && pip install --no-cache-dir $buildDeps
-
-# Install various extensions
-RUN fix-permissions $CONDA_DIR
-RUN jupyter labextension install @jupyterlab/github
-RUN jupyter labextension install jupyterlab-drawio
-RUN jupyter labextension install jupyter-leaflet
-RUN jupyter labextension install jupyterlab-plotly@4.8.1
-RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
-RUN pip install --no-cache-dir jupyter-tabnine==1.0.2  && \
-  jupyter nbextension install --py jupyter_tabnine && \
-  jupyter nbextension enable --py jupyter_tabnine && \
-  jupyter serverextension enable --py jupyter_tabnine
-RUN pip install --no-cache-dir jupyter_contrib_nbextensions \
- jupyter_nbextensions_configurator rise && \
-  jupyter nbextension enable codefolding/main
-RUN jupyter labextension install @ijmbarr/jupyterlab_spellchecker
-
-RUN fix-permissions /home/$NB_USER
-
+  
 RUN conda install --quiet --yes 'xeus-python=0.7.1' 'ptvsd' -c conda-forge \
   && pip install --upgrade jupyterlab-git==0.20.0 folium plotly nbdev \
   && export NODE_OPTIONS=--max-old-space-size=4096 \

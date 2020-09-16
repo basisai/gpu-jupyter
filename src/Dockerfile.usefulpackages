@@ -1,5 +1,3 @@
-USER root
-
 RUN conda install --quiet --yes 'xeus-python=0.7.1' 'ptvsd' -c conda-forge \
   && pip install --upgrade jupyterlab-git==0.20.0 folium plotly nbdev \
   && export NODE_OPTIONS=--max-old-space-size=4096 \
@@ -13,6 +11,3 @@ RUN conda install --quiet --yes 'xeus-python=0.7.1' 'ptvsd' -c conda-forge \
   && conda clean --all -f -y \
   && fix-permissions $CONDA_DIR \
   && fix-permissions /home/$NB_USER
-
-# Switch back to jovyan to avoid accidental container runs as root
-USER $NB_UID
