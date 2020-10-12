@@ -390,7 +390,7 @@ LABEL maintainer="Christoph Schranz <christoph.schranz@salzburgresearch.at>"
 # Install Tensorflow, check compatibility here: https://www.tensorflow.org/install/gpu
 # installation via conda leads to errors in version 4.8.2
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir "tensorflow-gpu>=2.1.*" && \
+    pip install --no-cache-dir "tensorflow-gpu==1.14.0" && \
     pip install --no-cache-dir keras
 
 # Install PyTorch with dependencies
@@ -401,7 +401,7 @@ RUN conda install --quiet --yes \
 RUN conda install --quiet --yes \
     pytorch \
     torchvision \
-    cudatoolkit=10.1 -c pytorch
+    cudatoolkit=10.0 -c pytorch
 #    pip install torch_nightly -f https://download.pytorch.org/whl/nightly/cu90/torch_nightly.html && \
 
 # Clean installation
