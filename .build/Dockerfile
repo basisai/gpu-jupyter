@@ -7,7 +7,7 @@
 
 # Use NVIDIA CUDA as base image and run the same installation as in the other packages.
 # The version of cudatoolkit must match those of the base image, see Dockerfile.pytorch
-FROM nvidia/cuda:10.1-cudnn7-runtime-ubuntu18.04
+FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu16.04
 LABEL authors="Christoph Schranz <christoph.schranz@salzburgresearch.at>, Mathematical Michael <consistentbayes@gmail.com>"
 # This is a concatenated Dockerfile, the maintainers of subsequent sections may vary.
 RUN chmod 1777 /tmp && chmod 1777 /var/tmp
@@ -38,7 +38,7 @@ USER root
 # features (e.g., download as all possible file formats)
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update \
- && apt-get install -yq --no-install-recommends \
+    && apt-get install -yq --no-install-recommends \
     wget \
     bzip2 \
     ca-certificates \
@@ -46,7 +46,7 @@ RUN apt-get update \
     locales \
     fonts-liberation \
     run-one \
- && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen
@@ -187,7 +187,7 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     # ---- nbconvert dependencies ----
     texlive-xetex \
     texlive-fonts-recommended \
-    texlive-plain-generic \
+    texlive-generic-recommended \
     # Optional dependency
     texlive-fonts-extra \
     # ----
@@ -285,10 +285,10 @@ USER $NB_UID
 
 WORKDIR $HOME
 
-  ############################################################################
-  ################ Dependency: jupyter/datascience-notebook ##################
-  ############################################################################
-  
+############################################################################
+################ Dependency: jupyter/datascience-notebook ##################
+############################################################################
+
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 
@@ -399,9 +399,9 @@ RUN conda install --quiet --yes \
 
 # Check compatibility here: https://pytorch.org/get-started/locally/
 RUN conda install --quiet --yes \
-     pytorch \ 
-     torchvision \
-     cudatoolkit=10.1 -c pytorch
+    pytorch \
+    torchvision \
+    cudatoolkit=10.1 -c pytorch
 #    pip install torch_nightly -f https://download.pytorch.org/whl/nightly/cu90/torch_nightly.html && \
 
 # Clean installation
@@ -409,10 +409,10 @@ RUN conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-  ############################################################################
-  ############################ Useful packages ###############################
-  ############################################################################
-  
+############################################################################
+############################ Useful packages ###############################
+############################################################################
+
 LABEL authors="Christoph Schranz <christoph.schranz@salzburgresearch.at>, Mathematical Michael <consistentbayes@gmail.com>"
 
 USER root
@@ -421,12 +421,12 @@ RUN pip install --no-cache-dir ipyleaflet plotly==4.8.* "ipywidgets>=7.5"
 
 # Install important packages and Graphviz
 RUN set -ex \
- && buildDeps=' \
+    && buildDeps=' \
     graphviz==0.11 \
-' \
- && apt-get update \
- && apt-get -y install htop apt-utils graphviz libgraphviz-dev openssh-client \
- && pip install --no-cache-dir $buildDeps
+    ' \
+    && apt-get update \
+    && apt-get -y install htop apt-utils graphviz libgraphviz-dev openssh-client \
+    && pip install --no-cache-dir $buildDeps
 
 # Install various extensions
 RUN fix-permissions $CONDA_DIR
@@ -436,12 +436,12 @@ RUN jupyter labextension install jupyter-leaflet
 RUN jupyter labextension install jupyterlab-plotly@4.8.1
 RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
 RUN pip install --no-cache-dir jupyter-tabnine==1.0.2  && \
-  jupyter nbextension install --py jupyter_tabnine && \
-  jupyter nbextension enable --py jupyter_tabnine && \
-  jupyter serverextension enable --py jupyter_tabnine
+    jupyter nbextension install --py jupyter_tabnine && \
+    jupyter nbextension enable --py jupyter_tabnine && \
+    jupyter serverextension enable --py jupyter_tabnine
 RUN pip install --no-cache-dir jupyter_contrib_nbextensions \
- jupyter_nbextensions_configurator rise && \
-  jupyter nbextension enable codefolding/main
+    jupyter_nbextensions_configurator rise && \
+    jupyter nbextension enable codefolding/main
 RUN jupyter labextension install @ijmbarr/jupyterlab_spellchecker
 
 RUN fix-permissions /home/$NB_USER
