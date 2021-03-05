@@ -1,7 +1,13 @@
-version: "3.4"
+version: "3.8"
 services:
   gpu-jupyter:
     build: .build
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities:
+              - gpu
     ports:
       - ${JUPYTER_PORT}:8888
     volumes:
@@ -9,6 +15,8 @@ services:
     environment:
       GRANT_SUDO: "yes"
       JUPYTER_ENABLE_LAB: "yes"
+      NB_UID: ${UID}
+      NB_GID: ${GID}
     # enable sudo permissions
     user:
       "root"
